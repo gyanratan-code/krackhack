@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311616847751",
+    "project_id": "krackhack-46be9",
+    "storage_bucket": "krackhack-46be9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311616847751:android:014719de9f2f343d819d22",
+        "android_client_info": {
+          "package_name": "com.example.iit_marketing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1eou1l8EQS5RlyRPH0e8jiEdhzEDSs8M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
