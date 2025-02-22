@@ -16,7 +16,7 @@ class FooterWidget extends StatelessWidget {
           _buildNavItem(context, icon: Icons.home, index: 0, route: "/home"),
           _buildNavItem(context, icon: Icons.search, index: 1, route: "/search"),
           _buildAddButton(context), // ✅ Special case for "Add"
-          _buildNavItem(context, icon: Icons.notifications, index: 3, route: "/notification"),
+          _buildNavItem(context, icon: Icons.chat, index: 3, route: "/chat"),
           _buildNavItem(context, icon: Icons.person, index: 4, route: "/profile"),
         ],
       ),

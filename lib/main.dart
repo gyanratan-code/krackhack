@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:iit_marketing/views/ItemPage.dart';
 import 'package:iit_marketing/views/addItem.dart';
+import 'package:iit_marketing/views/chat_page.dart';
 import 'package:iit_marketing/views/home.dart';
 import 'package:iit_marketing/views/login.dart';
 import 'package:iit_marketing/views/newNewsConfirmation.dart';
 import 'package:iit_marketing/views/orders.dart';
 import 'package:iit_marketing/views/profile.dart';
+import 'package:iit_marketing/views/search.dart';
 import 'package:iit_marketing/views/signup.dart';
 import 'firebase_options.dart';
 
@@ -56,7 +59,7 @@ class MyApp extends StatelessWidget {
           // ✅ Default Routes
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(builder: (context) => ProfilePage());
+              return MaterialPageRoute(builder: (context) => HomePage());
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
             case "/profile":
@@ -69,6 +72,12 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) => SignUp());
             case "/login":
               return MaterialPageRoute(builder: (context) => Login());
+            case "/search":
+              return MaterialPageRoute(builder: (context) => SearchPage());
+            case "/chat":
+              return MaterialPageRoute(builder: (context) => ChatPage());
+            case "/itemPage":
+              return MaterialPageRoute(builder: (context) => ItemPage());
             // case "/edit_profile":
             //   return MaterialPageRoute(builder: (context) => EditProfilePage());
             default:
