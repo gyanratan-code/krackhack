@@ -7,9 +7,9 @@ class ProductServices {
   Future<String> addProduct(
       String product,
       String brand,
-      double mrp,
+      double? mrp,
       String uid,
-      String categories,
+      String? categories,
       String thumbnail,
       List<String> image,
       String description,

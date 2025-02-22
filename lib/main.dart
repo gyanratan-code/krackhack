@@ -10,6 +10,7 @@ import 'package:iit_marketing/views/home.dart';
 import 'package:iit_marketing/views/login.dart';
 import 'package:iit_marketing/views/newNewsConfirmation.dart';
 import 'package:iit_marketing/views/orders.dart';
+import 'package:iit_marketing/views/profile.dart';
 import 'package:iit_marketing/views/signup.dart';
 import 'firebase_options.dart';
 
@@ -55,9 +56,11 @@ class MyApp extends StatelessWidget {
           // ✅ Default Routes
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(builder: (context) => HomePage());
+              return MaterialPageRoute(builder: (context) => ProfilePage());
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
+            case "/profile":
+              return MaterialPageRoute(builder: (context) => ProfilePage());
             case "/new":
               return MaterialPageRoute(builder: (context) => AddNews());
             case "/orders":

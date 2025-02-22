@@ -1,4 +1,6 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:iit_marketing/views/footer.dart';
 import 'package:iit_marketing/views/newNewsConfirmation.dart';
@@ -39,11 +41,14 @@ class _AddNewsState extends State<AddNews> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _longDescriptionController =
-      TextEditingController();
+  final TextEditingController _brandController = TextEditingController();
+  final TextEditingController _mrpController = TextEditingController();
+  final TextEditingController _longDescriptionController = TextEditingController();
 
   String _titleError = "";
   String _descriptionError = "";
+  String _branderror = "";
+  String _mrperror = "";
   String? _selectedCategory;
   String _categoryError = "";
 
@@ -102,7 +107,7 @@ class _AddNewsState extends State<AddNews> {
     }
   }
 
-  Future<void> _uploadImagesAndSaveToFirestore(BuildContext context,String product,String brand,double mrp,String categories,String description) async {
+  Future<void> _uploadImagesAndSaveToFirestore(BuildContext context,String product,String brand,double? mrp,String? categories,String description) async {
     List<String> imageUrlThumbnail = [];
     List<String> imageUrlsAdditional = [];
 
@@ -128,7 +133,7 @@ class _AddNewsState extends State<AddNews> {
       print("Uploaded Image URLs:");
       // Firestore upload function for collection
       _descriptionController.text;
-      _productServices.addProduct(product, brand, mrp, uid, categories, imageUrlThumbnail[0], imageUrlsAdditional, description, false)
+      _productServices.addProduct(product, brand, mrp, "123", categories, imageUrlThumbnail[0], imageUrlsAdditional, description, false);
       // \implement
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,7 +142,7 @@ class _AddNewsState extends State<AddNews> {
     }
   }
 
-  void _showUploadConfirmationDialog(BuildContext context,String product,String brand,double mrp,String? categories,String description) {
+  void _showUploadConfirmationDialog(BuildContext context,String product,String brand,double? mrp,String? categories,String description) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -155,7 +160,7 @@ class _AddNewsState extends State<AddNews> {
               onPressed: () {
                 // upload to database
                 Navigator.pop(context);
-                _uploadImagesAndSaveToFirestore();
+                _uploadImagesAndSaveToFirestore(context, product, brand, mrp, categories, description);
                 print("done");
                 Navigator.pushReplacementNamed(context, "/home");
               },
@@ -214,6 +219,24 @@ class _AddNewsState extends State<AddNews> {
                         _descriptionError = _validateWordLimit(value, 80);
                       });
                     }),
+                    _buildTextField(
+                        'Brand Name (Optional)', _brandController,
+                        maxLines: 1,
+                        maxWords: 80,
+                        errorMessage: _descriptionError, onChanged: (value) {
+                      setState(() {
+                        _branderror = _validateWordLimit(value, 80);
+                      });
+                    }),
+                    _buildTextField(
+                        'Selling Price(Expected)', _mrpController,
+                        maxLines: 1,
+                        maxWords: 80,
+                        errorMessage: _mrperror, onChanged: (value) {
+                      setState(() {
+                        _mrperror = _validateWordLimit(value, 80);
+                      });
+                    }, isNumeric: true),
                     _buildThumbnailPicker('Thumbnail Image:', _thumbnailImage,
                         _pickThumbnailImage),
                     _buildTextField('Give your long description here...',
@@ -230,6 +253,7 @@ class _AddNewsState extends State<AddNews> {
                         if (_titleController.text.trim().isEmpty ||
                             _descriptionController.text.trim().isEmpty ||
                             _longDescriptionController.text.trim().isEmpty ||
+                            _mrpController == null ||
                             _selectedCategory == null ||
                             _thumbnailImage == null ||
                             _additionalImages.isEmpty) {
@@ -253,7 +277,7 @@ class _AddNewsState extends State<AddNews> {
                           );
                           return;
                         }
-                        _showUploadConfirmationDialog(context,_titleController.text,_descriptionController.text,_selectedCategory,);
+                        _showUploadConfirmationDialog(context,_titleController.text, _brandController.text, double.tryParse(_mrpController.text), _selectedCategory, _descriptionController.text);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
@@ -400,6 +424,7 @@ class _AddNewsState extends State<AddNews> {
     int? maxWords,
     String errorMessage = "",
     Function(String)? onChanged,
+        isNumeric = false
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -408,6 +433,7 @@ class _AddNewsState extends State<AddNews> {
         children: [
           SizedBox(
             child: TextField(
+              keyboardType: isNumeric ? TextInputType.number : TextInputType.multiline,
               controller: controller,
               maxLines: maxLines,
               onChanged: (value) {
