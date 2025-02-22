@@ -824,12 +824,33 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:iit_marketing/views/footer.dart';
 import 'package:iit_marketing/views/newNewsConfirmation.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+// import 'package:google_vision/google_vision.dart';
+// detect expliit content in image
+// Future<void> detectExplicitContent(File imageFile) async {
+//   final googleVision = GoogleVision();
+//   await googleVision.loadCredentialsFromFile('assets/credentials.json');
+
+//   // Create an Image object from the file
+//   final image = Image.fromFile(imageFile);
+
+//   // Perform SafeSearch Detection
+//   final safeSearch = await googleVision.safeSearchDetection(image);
+
+//   if (safeSearch != null) {
+//     print('Adult: ${safeSearch.adult}');
+//     print('Spoof: ${safeSearch.spoof}');
+//     print('Medical: ${safeSearch.medical}');
+//     print('Violence: ${safeSearch.violence}');
+//     print('Racy: ${safeSearch.racy}');
+//   } else {
+//     print('No SafeSearch annotations found.');
+//   }
+// }
 
 class AddNews extends StatefulWidget {
   @override
@@ -839,7 +860,8 @@ class AddNews extends StatefulWidget {
 class _AddNewsState extends State<AddNews> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _longDescriptionController = TextEditingController();
+  final TextEditingController _longDescriptionController =
+      TextEditingController();
 
   String _titleError = "";
   String _descriptionError = "";
@@ -850,8 +872,16 @@ class _AddNewsState extends State<AddNews> {
   List<File> _additionalImages = [];
 
   final List<String> _categories = [
-    "Clothes", "Footwear", "Electronics", "Furniture", "Books",
-    "Groceries", "Accessories", "Stationery", "Sports Equipment", "Others"
+    "Clothes",
+    "Footwear",
+    "Electronics",
+    "Furniture",
+    "Books",
+    "Groceries",
+    "Accessories",
+    "Stationery",
+    "Sports Equipment",
+    "Others"
   ];
 
   // final ImagePicker _picker = ImagePicker();
@@ -891,7 +921,8 @@ class _AddNewsState extends State<AddNews> {
                     const Center(
                       child: Text(
                         'Add A New Item to sell...',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -903,20 +934,31 @@ class _AddNewsState extends State<AddNews> {
                     ),
                     const SizedBox(height: 16),
                     _buildCategoryDropdown(),
-                    _buildTextField('Product Name (20 words limit)', _titleController, maxWords: 20, errorMessage: _titleError, onChanged: (value) {
+                    _buildTextField(
+                        'Product Name (20 words limit)', _titleController,
+                        maxWords: 20,
+                        errorMessage: _titleError, onChanged: (value) {
                       setState(() {
                         _titleError = _validateWordLimit(value, 20);
                       });
                     }),
-                    _buildTextField('Description (80 words limit)', _descriptionController, maxLines: 5, maxWords: 80, errorMessage: _descriptionError, onChanged: (value) {
+                    _buildTextField(
+                        'Description (80 words limit)', _descriptionController,
+                        maxLines: 5,
+                        maxWords: 80,
+                        errorMessage: _descriptionError, onChanged: (value) {
                       setState(() {
                         _descriptionError = _validateWordLimit(value, 80);
                       });
                     }),
-                    _buildMultipleImagePicker('Thumbnail Image : ', _additionalImages, _pickAdditionalImages),
+                    _buildMultipleImagePicker('Thumbnail Image : ',
+                        _additionalImages, _pickAdditionalImages),
                     // _buildImagePicker('Thumbnail Image'),
-                    _buildTextField('Give your long description here...', _longDescriptionController, maxLines: 10),
-                    _buildMultipleImagePicker('Additional Images : ', _additionalImages, _pickAdditionalImages),
+                    _buildTextField('Give your long description here...',
+                        _longDescriptionController,
+                        maxLines: 10),
+                    _buildMultipleImagePicker('Additional Images : ',
+                        _additionalImages, _pickAdditionalImages),
                     // const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
@@ -927,16 +969,22 @@ class _AddNewsState extends State<AddNews> {
                             _thumbnailImage == null ||
                             _additionalImages.isEmpty) {
                           setState(() {
-                            _categoryError = _selectedCategory == null ? "Please select a category" : "";
+                            _categoryError = _selectedCategory == null
+                                ? "Please select a category"
+                                : "";
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("All fields must be filled")),
+                            const SnackBar(
+                                content: Text("All fields must be filled")),
                           );
                           return;
                         }
-                        if (_titleError.isNotEmpty || _descriptionError.isNotEmpty) {
+                        if (_titleError.isNotEmpty ||
+                            _descriptionError.isNotEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please fix errors before proceeding")),
+                            const SnackBar(
+                                content: Text(
+                                    "Please fix errors before proceeding")),
                           );
                           return;
                         }
@@ -946,7 +994,8 @@ class _AddNewsState extends State<AddNews> {
                             builder: (context) => NewNewsConfirmation(
                               title: _titleController.text.trim(),
                               description: _descriptionController.text.trim(),
-                              longDescription: _longDescriptionController.text.trim(),
+                              longDescription:
+                                  _longDescriptionController.text.trim(),
                             ),
                           ),
                         );
@@ -955,7 +1004,8 @@ class _AddNewsState extends State<AddNews> {
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
                       ),
                       child: const Text('Done'),
                     ),
@@ -974,66 +1024,80 @@ class _AddNewsState extends State<AddNews> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(label,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         image != null
             ? Image.file(image, height: 100, width: 100, fit: BoxFit.cover)
-            : ElevatedButton(onPressed: onPick, child: const Text('Pick Image')),
+            : ElevatedButton(
+                onPressed: onPick, child: const Text('Pick Image')),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildMultipleImagePicker(String label, List<File> images, VoidCallback onPick) {
+  Widget _buildMultipleImagePicker(
+      String label, List<File> images, VoidCallback onPick) {
     return Container(
-        width: double.infinity,
-        height: 100,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const Spacer(),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: images.map((image) => ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.file(image, height: 80, width: 80, fit: BoxFit.cover),
-              )).toList(),
-            ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: ElevatedButton.icon(
-                onPressed: onPick,
-                icon: const Icon(Icons.add_a_photo, size: 20, color: Colors.white,),
-                label: const Text('Add Images'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  elevation: 4,
-                ),
+      width: double.infinity,
+      height: 100,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(label,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Spacer(),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: images
+                .map((image) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(image,
+                          height: 80, width: 80, fit: BoxFit.cover),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ElevatedButton.icon(
+              onPressed: onPick,
+              icon: const Icon(
+                Icons.add_a_photo,
+                size: 20,
+                color: Colors.white,
+              ),
+              label: const Text('Add Images'),
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                elevation: 4,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
+
   Widget _buildTextField(
-      String label,
-      TextEditingController controller,
-      {
-        int maxLines = 1,
-        int? maxWords,
-        String errorMessage = "",
-        Function(String)? onChanged,
-      }) {
+    String label,
+    TextEditingController controller, {
+    int maxLines = 1,
+    int? maxWords,
+    String errorMessage = "",
+    Function(String)? onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
@@ -1047,16 +1111,22 @@ class _AddNewsState extends State<AddNews> {
                 if (maxWords != null) {
                   int wordCount = _countWords(value);
                   if (wordCount > maxWords) {
-                    List<String> words = value.trim().split(RegExp(r'\s+')).take(maxWords).toList();
+                    List<String> words = value
+                        .trim()
+                        .split(RegExp(r'\s+'))
+                        .take(maxWords)
+                        .toList();
                     controller.text = words.join(" ");
-                    controller.selection = TextSelection.collapsed(offset: controller.text.length);
+                    controller.selection =
+                        TextSelection.collapsed(offset: controller.text.length);
                   }
                 }
                 if (onChanged != null) onChanged(value);
               },
               decoration: InputDecoration(
                 labelText: label,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -1099,7 +1169,8 @@ class _AddNewsState extends State<AddNews> {
               }).toList(),
               decoration: InputDecoration(
                 labelText: "Select Category",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
                 filled: true,
                 fillColor: Colors.white,
                 errorText: _categoryError.isNotEmpty ? _categoryError : null,
@@ -1122,4 +1193,3 @@ class _AddNewsState extends State<AddNews> {
     return _countWords(text) > limit ? "Exceeded the limit" : "";
   }
 }
-
