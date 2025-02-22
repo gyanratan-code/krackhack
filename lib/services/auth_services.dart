@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   Future<String> createAccountWithEmail(String email, String password) async {
@@ -43,13 +44,28 @@ class AuthService {
   }
 
   // add name in users collection
-  Future<String> addName(String name, String uid) async {
+  Future<String> addName(String name, String uid, String email) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     try {
-      await users.add({'name': name, 'uid': uid});
+      await users.add({'name': name, 'uid': uid, 'email': email});
+      try {
+        await saveFCMToken(uid);
+      } catch (error) {
+        return "Error in FCM token";
+      }
       return "Name Updated.";
     } catch (error) {
       return "Error in updating name";
+    }
+  }
+
+  // save FCM Token
+  Future<void> saveFCMToken(String userId) async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    if (token != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'fcmToken': token,
+      });
     }
   }
 }
