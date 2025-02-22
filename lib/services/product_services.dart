@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductServices {
@@ -5,11 +7,11 @@ class ProductServices {
   Future<String> addProduct(
       String product,
       String brand,
-      String mrp,
+      double mrp,
       String uid,
-      List<String> categories,
+      String categories,
       String thumbnail,
-      String image,
+      List<String> image,
       String description,
       bool isSold) async {
     CollectionReference products =

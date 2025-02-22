@@ -3,28 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:iit_marketing/views/footer.dart';
 import 'package:iit_marketing/views/newNewsConfirmation.dart';
 import 'dart:io';
-// import 'package:google_vision/google_vision.dart';
-// detect expliit content in image
-// Future<void> detectExplicitContent(File imageFile) async {
-//   final googleVision = GoogleVision();
-//   await googleVision.loadCredentialsFromFile('assets/credentials.json');
+import 'package:iit_marketing/services/cloudinary_services.dart';
+import 'package:iit_marketing/services/product_services.dart';
 
-//   // Create an Image object from the file
-//   final image = Image.fromFile(imageFile);
-
-//   // Perform SafeSearch Detection
-//   final safeSearch = await googleVision.safeSearchDetection(image);
-
-//   if (safeSearch != null) {
-//     print('Adult: ${safeSearch.adult}');
-//     print('Spoof: ${safeSearch.spoof}');
-//     print('Medical: ${safeSearch.medical}');
-//     print('Violence: ${safeSearch.violence}');
-//     print('Racy: ${safeSearch.racy}');
-//   } else {
-//     print('No SafeSearch annotations found.');
-//   }
-// }
+final CloudinaryService _cloudinaryService = CloudinaryService();
+final ProductServices _productServices = ProductServices();
 
 class AddNews extends StatefulWidget {
   @override
@@ -119,7 +102,42 @@ class _AddNewsState extends State<AddNews> {
     }
   }
 
-  void _showUploadConfirmationDialog(BuildContext context) {
+  Future<void> _uploadImagesAndSaveToFirestore(BuildContext context,String product,String brand,double mrp,String categories,String description) async {
+    List<String> imageUrlThumbnail = [];
+    List<String> imageUrlsAdditional = [];
+
+    // Upload Thumbnail Image
+    if (_thumbnailImage != null) {
+      String? thumbnailUrl =
+          await _cloudinaryService.uploadImage(_thumbnailImage!.path);
+      if (thumbnailUrl != null) {
+        imageUrlThumbnail.add(thumbnailUrl);
+      }
+    }
+
+    // Upload Additional Images
+    for (File image in _additionalImages) {
+      String? imageUrl = await _cloudinaryService.uploadImage(image.path);
+      if (imageUrl != null) {
+        imageUrlsAdditional.add(imageUrl);
+      }
+    }
+
+    if (imageUrlThumbnail.isNotEmpty && imageUrlsAdditional.isNotEmpty) {
+      // Now you have the uploaded image URLs as strings
+      print("Uploaded Image URLs:");
+      // Firestore upload function for collection
+      _descriptionController.text;
+      _productServices.addProduct(product, brand, mrp, uid, categories, imageUrlThumbnail[0], imageUrlsAdditional, description, false)
+      // \implement
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to upload images. Try again!")),
+      );
+    }
+  }
+
+  void _showUploadConfirmationDialog(BuildContext context,String product,String brand,double mrp,String? categories,String description) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -135,6 +153,9 @@ class _AddNewsState extends State<AddNews> {
             ),
             TextButton(
               onPressed: () {
+                // upload to database
+                Navigator.pop(context);
+                _uploadImagesAndSaveToFirestore();
                 print("done");
                 Navigator.pushReplacementNamed(context, "/home");
               },
@@ -232,7 +253,7 @@ class _AddNewsState extends State<AddNews> {
                           );
                           return;
                         }
-                        _showUploadConfirmationDialog(context);
+                        _showUploadConfirmationDialog(context,_titleController.text,_descriptionController.text,_selectedCategory,);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
