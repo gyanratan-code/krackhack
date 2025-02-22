@@ -43,6 +43,7 @@ class ProductServices {
           .where('product', isLessThanOrEqualTo: "$query\uf8ff")
           .where('price', isGreaterThanOrEqualTo: minPrice)
           .where('price', isLessThanOrEqualTo: maxPrice)
+          .where('isSold', isEqualTo: false)
           .get();
       List<Map<String, dynamic>> productList = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
