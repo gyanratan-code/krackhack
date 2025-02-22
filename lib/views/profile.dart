@@ -1791,169 +1791,198 @@ class _ProfilePageState extends State<ProfilePage> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 64.0, bottom: 18),
-                    child: Column(
-                      children: [
-                        // Profile Header
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundImage: AssetImage("assets/images/i3.png"),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            profileStat("2", "Pending"),
-                            profileStat("4", "Buys"),
-                            profileStat("3", "Sells"),
-                          ],
-                        ),
-                        SizedBox(height: 18),
-
-                        // Bio Section
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text("Naman Shah (B23218)", style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("🌟 A short bio to describe yourself"),
-                              Text("📌 Emojis are supported"),
-                              InkWell(
-                                onTap: () {},
-                                child: Text(
-                                  "yourbrandwebsite.com",
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 10),
-
-                        // Buy & Sell Toggle with Underline
-                        Container(
-                          width: screenWidth,
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isBuySelected = true;
-                                        });
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Text("Buy", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                          SizedBox(height: 8),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isBuySelected = false;
-                                        });
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Text("Sell", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                          SizedBox(height: 8),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Stack(
-                                children: [
-                                  Container(
-                                    width: screenWidth,
-                                    height: 3,
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  AnimatedContainer(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                    width: screenWidth / 2,
-                                    height: 3,
-                                    color: Colors.black,
-                                    transform: Matrix4.translationValues(isBuySelected ? 0 : screenWidth / 2, 0, 0),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Divider(),
-                      ],
-                    ),
-                  ),
-
-                  // Posts List (Scrollable)
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(), // Disable ListView scrolling
-                    shrinkWrap: true, // Allow ListView to fit inside SingleChildScrollView
-                    padding: EdgeInsets.all(8),
-                    itemCount: isBuySelected ? buyPosts.length : sellPosts.length,
-                    itemBuilder: (context, index) {
-                      String title = isBuySelected ? buyPosts[index] : sellPosts[index];
-                      return Card(
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 200,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                                color: Colors.grey.shade300,
-                              ),
-                              child: Icon(Icons.image, color: Colors.white, size: 50),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                title,
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Persistent Footer
-          Container(
-            height: 60,
-            width: double.infinity,
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: FooterWidget(selectedIndex: 4), // Your footer widget from footer.dart
+      appBar: AppBar(
+        backgroundColor: Colors.white, // Matches UI
+        elevation: 0, // Removes shadow
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Icon(Icons.menu, color: Colors.black, size: 32,),
+            ), // 3 horizontal lines icon
+            onPressed: () {
+              // Add functionality here (e.g., open drawer or menu)
+            },
           ),
         ],
+      ),
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                        children: [
+                          // Profile Header
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: AssetImage("assets/images/i4.png"),
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              profileStat("2", "Items Pending"),
+                              profileStat("4", "Items Bought"),
+                              profileStat("3", "Items Sold"),
+                            ],
+                          ),
+                          SizedBox(height: 18),
+
+                          // Bio Section
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text("Naman Shah (B23218)", style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text("🌟 A short bio to describe yourself"),
+                                Text("📌 Emojis are supported"),
+                                InkWell(
+                                  onTap: () {},
+                                  child: Text(
+                                    "yourbrandwebsite.com",
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 10),
+
+                          // Buy & Sell Toggle with Underline
+                          Container(
+                            width: screenWidth,
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            isBuySelected = true;
+                                          });
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Text("Buy", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                            SizedBox(height: 8),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            isBuySelected = false;
+                                          });
+                                        },
+                                        child: Column(
+                                          children: [
+                                            Text("Sell", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                            SizedBox(height: 8),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: screenWidth,
+                                      height: 3,
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    AnimatedContainer(
+                                      duration: Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                      width: screenWidth / 2,
+                                      height: 3,
+                                      color: Colors.black,
+                                      transform: Matrix4.translationValues(isBuySelected ? 0 : screenWidth / 2, 0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Divider(),
+                        ],
+                      ),
+
+                    // Posts List (Scrollable)
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(), // Disable ListView scrolling
+                      shrinkWrap: true, // Allow ListView to fit inside SingleChildScrollView
+                      padding: EdgeInsets.all(8),
+                      itemCount: isBuySelected ? buyPosts.length : sellPosts.length,
+                      itemBuilder: (context, index) {
+                        String title = isBuySelected ? buyPosts[index] : sellPosts[index];
+                        return GestureDetector(
+                          onTap: (){
+                            Navigator.pushNamed(context, "/itemPage");
+                            },
+                          child: Card(
+                            color: Colors.white,
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 200,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                                    image: DecorationImage(
+                                      image: AssetImage('assets/images/i4.png'),
+                                      fit: BoxFit.cover, // Adjusts the image to fit the container
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Persistent Footer
+            Container(
+              height: 60,
+              width: double.infinity,
+              color: Colors.white,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: FooterWidget(selectedIndex: 4), // Your footer widget from footer.dart
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1962,7 +1991,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       children: [
         Text(count, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-        Text(label, style: TextStyle(color: Colors.grey, fontSize: 15)),
+        Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 15)),
       ],
     );
   }

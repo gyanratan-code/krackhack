@@ -59,55 +59,62 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 44,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
+            // Center(
+                // child: Text("IIT Mandi Marketplace", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green[900]),)
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //   child: TextField(
+            //     decoration: InputDecoration(
+            //       hintText: 'Search',
+            //       prefixIcon: Icon(Icons.search),
+            //       border: OutlineInputBorder(
+            //         borderRadius: BorderRadius.circular(8),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // History and Orders Buttons
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      side: BorderSide(color: Colors.grey.shade300),
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {},
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 12), // More balanced padding
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          side: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        icon: Icon(Icons.history, size: 18, color: Colors.blueAccent),
+                        label: Text(
+                          'History',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.blueAccent),
+                        ),
+                      ),
                     ),
-                    icon: Icon(Icons.history, size: 18, color: Colors.blueAccent),
-                    label: Text(
-                      'History',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.blueAccent),
+                    SizedBox(width: 8,),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, "/orders");
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          side: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        icon: Icon(Icons.shopping_cart, size: 18, color: Colors.green),
+                        label: Text(
+                          'Orders',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.green),
+                        ),
+                      ),
                     ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, "/orders");
-                    },
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      side: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    icon: Icon(Icons.shopping_cart, size: 18, color: Colors.green),
-                    label: Text(
-                      'Orders',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.green),
-                    ),
-                  ),
+                  ],
+                )
 
-                ],
-              ),
             ),
 
         SizedBox(
@@ -175,65 +182,133 @@ class _HomePageState extends State<HomePage> {
                   // Horizontal Scrolling Row
                   SizedBox(
                     height: 220,
-                    child: ListView.builder(
+                    // child: ListView.builder(
+                    //   scrollDirection: Axis.horizontal,
+                    //   itemCount: category.value.length,
+                    //   itemBuilder: (context, index) {
+                    //     final product = category.value[index];
+                    //     return Padding(
+                    //       padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    //       child: Container(
+                    //         width: 160,
+                    //         decoration: BoxDecoration(
+                    //           borderRadius: BorderRadius.circular(10),
+                    //           color: Colors.grey[100],
+                    //         ),
+                    //         child: Column(
+                    //           crossAxisAlignment: CrossAxisAlignment.start,
+                    //           children: [
+                    //             Container(
+                    //               height: 120,
+                    //               decoration: BoxDecoration(
+                    //                 borderRadius: BorderRadius.circular(10),
+                    //                 image: DecorationImage(
+                    //                   image: AssetImage(product['image']!),
+                    //                   fit: BoxFit.cover,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //             SizedBox(height: 5),
+                    //             Padding(
+                    //               padding: const EdgeInsets.only(left: 8.0),
+                    //               child: Text(
+                    //                 product['brand']!,
+                    //                 style: TextStyle(color: Colors.grey, fontSize: 14),
+                    //               ),
+                    //             ),
+                    //             Padding(
+                    //               padding: const EdgeInsets.only(left: 8.0),
+                    //               child: Text(
+                    //                 product['name']!,
+                    //                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    //               ),
+                    //             ),
+                    //             const Spacer(),
+                    //             Padding(
+                    //               padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                    //               child: Text(
+                    //                 product['price']!,
+                    //                 style: TextStyle(
+                    //                   fontSize: 14,
+                    //                   fontWeight: FontWeight.bold,
+                    //                   color: Colors.green,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+                    child : ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: category.value.length,
                       itemBuilder: (context, index) {
                         final product = category.value[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Container(
-                            width: 160,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.grey[100],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 120,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: AssetImage(product['image']!),
-                                      fit: BoxFit.cover,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              "/itemPage",
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Container(
+                              width: 160,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.grey[100],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: AssetImage(product['image']!),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 5),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    product['brand']!,
-                                    style: TextStyle(color: Colors.grey, fontSize: 14),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    product['name']!,
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
-                                  child: Text(
-                                    product['price']!,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green,
+                                  SizedBox(height: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      product['brand']!,
+                                      style: TextStyle(color: Colors.grey, fontSize: 14),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      product['name']!,
+                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                                    child: Text(
+                                      product['price']!,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
                       },
                     ),
+
                   ),
                   SizedBox(height: 10),
                 ],
