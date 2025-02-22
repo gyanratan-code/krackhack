@@ -2,7 +2,6 @@ import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:cloudinary_flutter/image/cld_image.dart';
 import 'package:cloudinary_flutter/cloudinary_context.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -42,12 +41,14 @@ class MyApp extends StatelessWidget {
         initialRoute: "/",
         onGenerateRoute: (settings) {
           if (settings.name == "/new_news_confirmation") {
-            final args = settings.arguments as Map<String, String>;
+            final args = settings.arguments as Map<String, dynamic>; // Ensure dynamic to support List
             return MaterialPageRoute(
               builder: (context) => NewNewsConfirmation(
                 title: args["title"]!,
                 description: args["description"]!,
                 longDescription: args["longDescription"]!,
+                thumbnailImage: args["thumbnailPath"] ?? '', // Handle null
+                additionalImages: List<String>.from(args["additionalImages"] ?? []), // Ensure List<String>
               ),
             );
           }
