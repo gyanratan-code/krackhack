@@ -12,12 +12,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Sample Data for posts
-  final List<String> buyPosts =
-      List.generate(5, (index) => "Buy Item ${index + 1}");
-  final List<String> sellPosts =
-      List.generate(5, (index) => "Sell Item ${index + 1}");
-
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -126,7 +120,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    // You can add toggle functionality here if needed.
+                                  },
                                   child: Column(
                                     children: [
                                       Text("Sell",
@@ -159,57 +155,84 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                     ),
-                    // Posts List (Scrollable)
-                    ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(8),
-                      itemCount: 5,
-                          // isBuySelected ? buyPosts.length : sellPosts.length,
-                      itemBuilder: (context, index) {
-                        String title = "Tilte Here";
-                            // isBuySelected ? buyPosts[index] : sellPosts[index];
-                        return GestureDetector(
-                          onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => ItemPage(product: []),
-                            //   ),
-                            // );
-                          },
-                          child: Card(
-                            color: Colors.white,
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: 200,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(10)),
-                                    image: DecorationImage(
-                                      image: AssetImage('assets/images/i4.png'),
-                                      fit: BoxFit.cover,
+                    // Products List (Sell Items) fetched from Firestore
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('products')
+                          .where('uid', isEqualTo: _auth.currentUser!.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Text("Error fetching products");
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return Text("No products found");
+                        }
+                        final products = snapshot.data!.docs;
+                        return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(8),
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            final productData =
+                                products[index].data() as Map<String, dynamic>;
+                            final title = productData['product'] ?? "No Title";
+                            // Get the image URL; if none is provided, default to a local asset
+                            final imageUrl = productData['thumbnail'] ??
+                                'assets/images/i4.png';
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ItemPage(product: productData),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                color: Colors.white,
+                                margin: EdgeInsets.symmetric(vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      height: 200,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(10)),
+                                        image: DecorationImage(
+                                          // Use NetworkImage if the imageUrl starts with 'http', otherwise use AssetImage
+                                          image: imageUrl.startsWith('http')
+                                              ? NetworkImage(imageUrl)
+                                              : AssetImage(imageUrl)
+                                                  as ImageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        title,
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                    title,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         );
                       },
                     ),

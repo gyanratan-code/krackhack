@@ -36,33 +36,6 @@ class ProductServices {
     }
   }
 
-  // Search product in real-time stream
-  // Stream<List<Map<String, dynamic>>> searchProductStream(
-  //     String query, double minPrice, double maxPrice) {
-  //   Query baseQuery = _firestore
-  //       .collection('products')
-  //       .where('price', isGreaterThanOrEqualTo: minPrice)
-  //       .where('price', isLessThanOrEqualTo: maxPrice)
-  //       .where('isSold', isEqualTo: false)
-  //       .limit(30);
-  //
-  //   if (query.isNotEmpty) {
-  //     // When filtering by product name, order by the 'product' field.
-  //     baseQuery = baseQuery
-  //         .orderBy('product')
-  //         .where('product', isGreaterThanOrEqualTo: query)
-  //         .where('product', isLessThanOrEqualTo: "$query\uf8ff")
-  //         .limit(30);
-  //   } else {
-  //     // If there's no query, order by 'postedAt' to get recent products.
-  //     baseQuery = baseQuery.orderBy('postedAt', descending: true).limit(10);
-  //   }
-  //
-  //   return baseQuery.snapshots().map((snapshot) => snapshot.docs
-  //       .map((doc) => doc.data() as Map<String, dynamic>)
-  //       .toList());
-  // }
-
   Stream<List<Map<String, dynamic>>> searchProductStream(
       String query, double minPrice, double maxPrice) {
     print("Searching for: $query in price range: $minPrice - $maxPrice");
@@ -83,7 +56,8 @@ class ProductServices {
       // Apply text filtering in Dart (case insensitive)
       if (query.isNotEmpty) {
         return data.where((product) {
-          final productName = product['product']?.toString().toLowerCase() ?? "";
+          final productName =
+              product['product']?.toString().toLowerCase() ?? "";
           return productName.contains(query.toLowerCase());
         }).toList();
       }
@@ -92,14 +66,12 @@ class ProductServices {
     });
   }
 
-
-
-
   // Get recent products as a real-time stream
   Stream<List<Map<String, dynamic>>> getRecentProductsStream() {
     return _firestore
         .collection('products')
         .orderBy('postedAt', descending: true)
+        .limit(12)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => doc.data() as Map<String, dynamic>)
@@ -111,6 +83,7 @@ class ProductServices {
     return _firestore
         .collection('products')
         .where('isSold', isEqualTo: false)
+        .limit(30)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => doc.data() as Map<String, dynamic>)
