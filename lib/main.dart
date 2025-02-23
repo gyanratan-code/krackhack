@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     return MaterialApp(
         title: 'News App',
         theme: ThemeData(
@@ -75,7 +76,7 @@ class MyApp extends StatelessWidget {
           // ✅ Default Routes
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(builder: (context) => HomePage());
+              return MaterialPageRoute(builder: (context) => Login());
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
             case "/profile":
@@ -92,10 +93,11 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) => SearchPage());
             case "/chat":
               return MaterialPageRoute(
-                  builder: (context) => Chats());
+                  builder: (context) => Chats(uid: _auth.currentUser!.uid));
             // case "/itemPage":
             //   return MaterialPageRoute(builder: (context) => ItemPage());
             // case "/edit_profile":
+
             //   return MaterialPageRoute(builder: (context) => EditProfilePage());
             default:
               return MaterialPageRoute(builder: (context) => HomePage());

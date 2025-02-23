@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/messaging_services.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverId;
@@ -14,11 +15,32 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final MessagingServices _messagingServices = MessagingServices();
+
+  List<Map<String, dynamic>> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _syncMessages();
+  }
 
   String getChatId(String user1, String user2) {
     List<String> ids = [user1, user2];
     ids.sort();
     return ids.join("_");
+  }
+
+  void _syncMessages() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) return;
+
+    List<Map<String, dynamic>> fetchedMessages = await _messagingServices
+        .fetchMessages(currentUser.uid, widget.receiverId);
+
+    setState(() {
+      messages = fetchedMessages;
+    });
   }
 
   void sendMessage() async {
@@ -49,16 +71,8 @@ class _ChatScreenState extends State<ChatScreen> {
     }, SetOptions(merge: true));
 
     _messageController.clear();
-  }
 
-  Stream<QuerySnapshot> getMessages() {
-    String chatId = getChatId(_auth.currentUser!.uid, widget.receiverId);
-    return _firestore
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp', descending: true)
-        .snapshots();
+    _syncMessages(); // Refresh messages after sending
   }
 
   @override
@@ -68,26 +82,16 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: getMessages(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData)
-                  return Center(child: CircularProgressIndicator());
-
-                List<DocumentSnapshot> docs = snapshot.data!.docs;
-                return ListView.builder(
-                  reverse: true,
-                  itemCount: docs.length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> data =
-                        docs[index].data() as Map<String, dynamic>;
-                    return ListTile(
-                      title: Text(data['message']),
-                      subtitle: Text(data['senderId'] == _auth.currentUser!.uid
-                          ? "You"
-                          : "Friend"),
-                    );
-                  },
+            child: ListView.builder(
+              reverse: true,
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> data = messages[index];
+                return ListTile(
+                  title: Text(data['message']),
+                  subtitle: Text(data['senderId'] == _auth.currentUser!.uid
+                      ? "You"
+                      : "Friend"),
                 );
               },
             ),
