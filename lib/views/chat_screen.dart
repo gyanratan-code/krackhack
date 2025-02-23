@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../services/messaging_services.dart';
+import 'package:iit_marketing/services/messaging_services.dart';
+import 'package:iit_marketing/services/auth_services.dart';
 
 class ChatScreen extends StatefulWidget {
   final String receiverId;
@@ -16,6 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final MessagingServices _messagingServices = MessagingServices();
+  final AuthService _authServices = AuthService(); // Instance of AuthServices
 
   List<Map<String, dynamic>> messages = [];
 
@@ -52,6 +54,18 @@ class _ChatScreenState extends State<ChatScreen> {
 
     String chatId = getChatId(currentUser.uid, widget.receiverId);
 
+    // Check if the chat document exists. If not, this is the first message.
+    DocumentSnapshot chatDoc =
+        await _firestore.collection('chats').doc(chatId).get();
+    if (!chatDoc.exists) {
+      // For the first message, update both users' chat lists.
+      await _authServices.updateUserChatList(
+        currentUid: currentUser.uid,
+        receiverUid: widget.receiverId,
+      );
+    }
+
+    // Add the message to the 'messages' subcollection.
     await _firestore
         .collection('chats')
         .doc(chatId)
@@ -63,6 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
       'timestamp': FieldValue.serverTimestamp(),
     });
 
+    // Update the chat document with chat summary details.
     await _firestore.collection('chats').doc(chatId).set({
       'user1': currentUser.uid,
       'user2': widget.receiverId,
@@ -71,14 +86,16 @@ class _ChatScreenState extends State<ChatScreen> {
     }, SetOptions(merge: true));
 
     _messageController.clear();
-
     _syncMessages(); // Refresh messages after sending
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat"), backgroundColor: Colors.white,),
+      appBar: AppBar(
+        title: Text("Chat"),
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: Colors.white,
       body: Container(
         color: Colors.white,

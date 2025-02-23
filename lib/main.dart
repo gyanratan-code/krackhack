@@ -1,6 +1,3 @@
-import 'package:cloudinary_url_gen/cloudinary.dart';
-import 'package:cloudinary_flutter/image/cld_image.dart';
-import 'package:cloudinary_flutter/cloudinary_context.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,9 +18,6 @@ import 'package:iit_marketing/views/userInputPage.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-var CLOUDINARY_URL =
-    'cloudinary://965385289918515:7VlJRstsqWldtRjsm6KAvFM_A70@dec8nkbl4';
-var cloudinary = Cloudinary.fromStringUrl(CLOUDINARY_URL);
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -70,7 +64,8 @@ class MyApp extends StatelessWidget {
                 description: args["description"]!,
                 longDescription: args["longDescription"]!,
                 thumbnailImage: args["thumbnailPath"] ?? '',
-                additionalImages: List<String>.from(args["additionalImages"] ?? []),
+                additionalImages:
+                    List<String>.from(args["additionalImages"] ?? []),
               ),
             );
           }
@@ -80,7 +75,8 @@ class MyApp extends StatelessWidget {
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
             case "/userInput":
-              return MaterialPageRoute(builder: (context) => ProfileSetupPage());
+              return MaterialPageRoute(
+                  builder: (context) => ProfileSetupPage());
             case "/profile":
               return MaterialPageRoute(builder: (context) => ProfilePage());
             case "/new":
