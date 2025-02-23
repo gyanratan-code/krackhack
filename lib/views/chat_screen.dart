@@ -78,42 +78,46 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat")),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> data = messages[index];
-                return ListTile(
-                  title: Text(data['message']),
-                  subtitle: Text(data['senderId'] == _auth.currentUser!.uid
-                      ? "You"
-                      : "Friend"),
-                );
-              },
+      appBar: AppBar(title: Text("Chat"), backgroundColor: Colors.white,),
+      backgroundColor: Colors.white,
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: true,
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> data = messages[index];
+                  return ListTile(
+                    title: Text(data['message']),
+                    subtitle: Text(data['senderId'] == _auth.currentUser!.uid
+                        ? "You"
+                        : "Friend"),
+                  );
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(hintText: "Type a message"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      decoration: InputDecoration(hintText: "Type a message"),
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: sendMessage,
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: sendMessage,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
