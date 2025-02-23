@@ -328,8 +328,12 @@ class _ChatPageState extends State<Chats> {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('chats')
-                  .where('user1', isEqualTo: widget.uid)
+                  .where(Filter.or(
+                Filter('user1', isEqualTo: widget.uid),
+                Filter('user2', isEqualTo: widget.uid),
+              ))
                   .snapshots(),
+
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   print("⏳ Firestore is still loading...");
