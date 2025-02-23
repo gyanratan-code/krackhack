@@ -16,12 +16,15 @@ class AuthService {
         "uid": userCredential.user!.uid,
         "profilePic": "assets/images/user.png",
         "joinedAt": FieldValue.serverTimestamp(),
+        "bought": 0,
+        "sold": 0,
+        "pending": 0
       });
 
-      print("✅ User Created: ${userCredential.user?.email}");
+      print("User Created: ${userCredential.user?.email}");
       return "Account created";
     } on FirebaseAuthException catch (e) {
-      print("❌ Firebase Auth Error: ${e.code} - ${e.message}");
+      print("Firebase Auth Error: ${e.code} - ${e.message}");
       return e.message.toString();
     }
   }
