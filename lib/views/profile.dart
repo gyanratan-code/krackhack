@@ -24,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    // Create a reference to the user's document in the 'users' collection.
+    // Reference to the current user's document in the 'users' collection.
     final userDocRef = FirebaseFirestore.instance
         .collection('users')
         .doc(_auth.currentUser!.uid);
@@ -35,19 +35,13 @@ class _ProfilePageState extends State<ProfilePage> {
         elevation: 0, // Removes shadow
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
             icon: Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: Icon(
-                Icons.menu,
-                color: Colors.black,
-                size: 32,
-              ),
+              child: Icon(Icons.menu, color: Colors.black, size: 32),
             ),
             onPressed: () {
               // Add functionality here (e.g., open drawer or menu)
@@ -64,138 +58,133 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        // Profile Header
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.transparent,
-                          backgroundImage: AssetImage("assets/images/user.png"),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    // Profile Header
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: AssetImage("assets/images/user.png"),
+                    ),
+                    SizedBox(height: 16),
+                    // FutureBuilder to fetch and display stats, name, and bio
+                    FutureBuilder<DocumentSnapshot>(
+                      future: userDocRef.get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+                        if (snapshot.hasError) {
+                          return Text("Error loading profile");
+                        }
+                        if (!snapshot.hasData || !snapshot.data!.exists) {
+                          return Text("User data not found");
+                        }
+                        // Extract data from the Firestore document
+                        Map<String, dynamic> userData =
+                            snapshot.data!.data() as Map<String, dynamic>;
+                        String name = userData['name'] ?? "No Name";
+                        String bio = userData['bio'] ?? "No bio available";
+                        String pending = (userData['pending'] ?? 0).toString();
+                        String bought = (userData['bought'] ?? 0).toString();
+                        String sold = (userData['sold'] ?? 0).toString();
+
+                        return Column(
                           children: [
-                            profileStat("2", "Items Pending"),
-                            profileStat("4", "Items Bought"),
-                            profileStat("3", "Items Sold"),
+                            // Stats Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                profileStat(pending, "Items Pending"),
+                                profileStat(bought, "Items Bought"),
+                                profileStat(sold, "Items Sold"),
+                              ],
+                            ),
+                            SizedBox(height: 18),
+                            // Bio Section
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  name,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                                SizedBox(height: 4),
+                                Text(bio),
+                              ],
+                            ),
                           ],
-                        ),
-                        SizedBox(height: 18),
-
-                        // Bio Section: Fetch name and bio from Firestore
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: FutureBuilder<DocumentSnapshot>(
-                            future: userDocRef.get(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return CircularProgressIndicator();
-                              }
-                              if (snapshot.hasError) {
-                                return Text("Error loading profile");
-                              }
-                              if (!snapshot.hasData || !snapshot.data!.exists) {
-                                return Text("User data not found");
-                              }
-                              // Extract data from the document
-                              Map<String, dynamic> userData =
-                                  snapshot.data!.data() as Map<String, dynamic>;
-                              String name = userData['name'] ?? "No Name";
-                              String bio =
-                                  userData['bio'] ?? "No bio available";
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(bio),
-                                  // You can add more fields (e.g., website) if available
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 10),
-
-                        // Buy & Sell Toggle with Underline
-                        Container(
-                          width: screenWidth,
-                          child: Column(
+                        );
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    // Buy & Sell Toggle with Underline
+                    Container(
+                      width: screenWidth,
+                      child: Column(
+                        children: [
+                          Row(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isBuySelected = true;
-                                        });
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Text("Buy",
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold)),
-                                          SizedBox(height: 8),
-                                        ],
-                                      ),
-                                    ),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isBuySelected = true;
+                                    });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text("Buy",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 8),
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          isBuySelected = false;
-                                        });
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Text("Sell",
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold)),
-                                          SizedBox(height: 8),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                              Stack(
-                                children: [
-                                  Container(
-                                    width: screenWidth,
-                                    height: 3,
-                                    color: Colors.grey.shade300,
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      isBuySelected = false;
+                                    });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text("Sell",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 8),
+                                    ],
                                   ),
-                                  AnimatedContainer(
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                    width: screenWidth / 2,
-                                    height: 3,
-                                    color: Colors.black,
-                                    transform: Matrix4.translationValues(
-                                        isBuySelected ? 0 : screenWidth / 2,
-                                        0,
-                                        0),
-                                  ),
-                                ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          Stack(
+                            children: [
+                              Container(
+                                width: screenWidth,
+                                height: 3,
+                                color: Colors.grey.shade300,
+                              ),
+                              AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                width: screenWidth / 2,
+                                height: 3,
+                                color: Colors.black,
+                                transform: Matrix4.translationValues(
+                                    isBuySelected ? 0 : screenWidth / 2, 0, 0),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-
                     // Posts List (Scrollable)
                     ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
@@ -249,7 +238,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-
             // Persistent Footer
             Container(
               height: 60,
