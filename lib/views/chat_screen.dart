@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:iit_marketing/services/messaging_services.dart';
-import 'package:iit_marketing/services/auth_services.dart';
+import 'package:iit_marketing/services/auth_services.dart'; // Import the AuthServices
 
 class ChatScreen extends StatefulWidget {
   final String receiverId;
@@ -38,8 +38,8 @@ class _ChatScreenState extends State<ChatScreen> {
     if (currentUser == null) return;
 
     List<Map<String, dynamic>> fetchedMessages = await _messagingServices
-        .fetchMessages(currentUser.uid, widget.receiverId);
-
+        .fetchMessages(currentUser.uid, widget.receiverId.toString());
+    print(widget.receiverId.toString());
     setState(() {
       messages = fetchedMessages;
     });
@@ -52,7 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
     User? currentUser = _auth.currentUser;
     if (currentUser == null) return;
 
-    String chatId = getChatId(currentUser.uid, widget.receiverId);
+    String chatId = getChatId(currentUser.uid, widget.receiverId.toString());
 
     // Check if the chat document exists. If not, this is the first message.
     DocumentSnapshot chatDoc =
@@ -61,7 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // For the first message, update both users' chat lists.
       await _authServices.updateUserChatList(
         currentUid: currentUser.uid,
-        receiverUid: widget.receiverId,
+        receiverUid: widget.receiverId.toString(),
       );
     }
 
@@ -72,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
         .collection('messages')
         .add({
       'senderId': currentUser.uid,
-      'receiverId': widget.receiverId,
+      'receiverId': widget.receiverId.toString(),
       'message': messageText,
       'timestamp': FieldValue.serverTimestamp(),
     });
@@ -80,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // Update the chat document with chat summary details.
     await _firestore.collection('chats').doc(chatId).set({
       'user1': currentUser.uid,
-      'user2': widget.receiverId,
+      'user2': widget.receiverId.toString(),
       'lastMessage': messageText,
       'lastMessageTimestamp': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
