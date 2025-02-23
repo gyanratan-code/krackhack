@@ -16,27 +16,37 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center( // ✅ Center the entire form
-        child: SingleChildScrollView( // ✅ Allows scrolling if needed
+      body: Center(
+        // ✅ Center the entire form
+        child: SingleChildScrollView(
+          // ✅ Allows scrolling if needed
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // ✅ Center vertically
-              crossAxisAlignment: CrossAxisAlignment.center, // ✅ Center horizontally
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // ✅ Center vertically
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // ✅ Center horizontally
               children: [
                 const SizedBox(height: 40),
 
                 // App Name
                 const Text(
                   "IIT Mandi Marketplace",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                 ),
 
                 const SizedBox(height: 10),
 
                 // Subtitle
-                const Text("Create an account", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                const Text("Enter your email to sign up for this app", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                const Text("Create an account",
+                    style:
+                        TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                const Text("Enter your email to sign up for this app",
+                    style: TextStyle(fontSize: 14, color: Colors.grey)),
 
                 const SizedBox(height: 20),
 
@@ -47,12 +57,15 @@ class _SignUpState extends State<SignUp> {
                     children: [
                       // Email Input
                       TextFormField(
-                        validator: (value) => value == null || value.isEmpty ? "Email cannot be empty" : null,
+                        validator: (value) => value == null || value.isEmpty
+                            ? "Email cannot be empty"
+                            : null,
                         controller: _emailController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
                           labelText: "Institute Email ID",
                         ),
                       ),
@@ -61,13 +74,16 @@ class _SignUpState extends State<SignUp> {
 
                       // Password Input
                       TextFormField(
-                        validator: (value) => value == null || value.length < 8 ? "Password should have at least 8 characters" : null,
+                        validator: (value) => value == null || value.length < 8
+                            ? "Password should have at least 8 characters"
+                            : null,
                         controller: _passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10)),
                           labelText: "Password",
                         ),
                       ),
@@ -80,12 +96,15 @@ class _SignUpState extends State<SignUp> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already signed up?", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    const Text("Already signed up?",
+                        style: TextStyle(fontSize: 14, color: Colors.grey)),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, "/login");
                       },
-                      child: const Text("Log in", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                      child: const Text("Log in",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -99,32 +118,37 @@ class _SignUpState extends State<SignUp> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        print("🔹 Trying to create account with: ${_emailController.text}");
+                        print(
+                            "🔹 Trying to create account with: ${_emailController.text}");
 
-                        String result = await AuthService().createAccountWithEmail(
-                            _emailController.text,
-                            _passwordController.text
-                        );
+                        String result = await AuthService()
+                            .createAccountWithEmail(_emailController.text,
+                                _passwordController.text);
 
                         if (result == "Account created") {
                           print("✅ Account successfully created!");
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Account Created")),
                           );
-                          Navigator.restorablePushNamedAndRemoveUntil(context, "/edit_profile", (route) => false);
+                          Navigator.restorablePushNamedAndRemoveUntil(
+                              context, "/edit_profile", (route) => false);
                         } else {
                           print("❌ Error: $result");
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(result), backgroundColor: Colors.red.shade400),
+                            SnackBar(
+                                content: Text(result),
+                                backgroundColor: Colors.red.shade400),
                           );
                         }
                       }
                     },
-                    child: const Text("Continue", style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: const Text("Continue",
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
                   ),
                 ),
 
@@ -140,12 +164,14 @@ class _SignUpState extends State<SignUp> {
                       children: [
                         TextSpan(
                           text: "Terms of Service",
-                          style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                         const TextSpan(text: " and "),
                         TextSpan(
                           text: "Privacy Policy",
-                          style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

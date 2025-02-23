@@ -10,6 +10,14 @@ class AuthService {
         email: email,
         password: password,
       );
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      await users.doc(userCredential.user!.uid).set({
+        "uid": userCredential.user!.uid,
+        "profilePic": "assets/images/user.png",
+        "joinedAt": FieldValue.serverTimestamp(),
+      });
+
       print("✅ User Created: ${userCredential.user?.email}");
       return "Account created";
     } on FirebaseAuthException catch (e) {
