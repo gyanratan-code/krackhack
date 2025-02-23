@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iit_marketing/views/ItemPage.dart';
 import 'package:iit_marketing/views/addItem.dart';
+import 'package:iit_marketing/views/allUsersChats.dart';
 import 'package:iit_marketing/views/chat_page.dart';
 import 'package:iit_marketing/views/chat_screen.dart';
 import 'package:iit_marketing/views/home.dart';
@@ -74,7 +75,7 @@ class MyApp extends StatelessWidget {
           // ✅ Default Routes
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(builder: (context) => SignUp());
+              return MaterialPageRoute(builder: (context) => HomePage());
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
             case "/profile":
@@ -91,11 +92,9 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) => SearchPage());
             case "/chat":
               return MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                        receiverId: "12345",
-                      ));
-            case "/itemPage":
-              return MaterialPageRoute(builder: (context) => ItemPage());
+                  builder: (context) => Chats());
+            // case "/itemPage":
+            //   return MaterialPageRoute(builder: (context) => ItemPage());
             // case "/edit_profile":
             //   return MaterialPageRoute(builder: (context) => EditProfilePage());
             default:

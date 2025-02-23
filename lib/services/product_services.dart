@@ -88,12 +88,13 @@ class ProductServices {
       CollectionReference products =
           FirebaseFirestore.instance.collection('products');
       QuerySnapshot querySnapshot = await products
-          .orderBy('postedAt', descending: true) // Order by timestamp
-          .limit(10)
+          // .orderBy('postedAt', descending: true) // Order by timestamp
           .get();
+      print(querySnapshot);
       List<Map<String, dynamic>> productList = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();
+      print(productList);
       return productList;
     } catch (error) {
       print("Error fetching recent products: $error");
