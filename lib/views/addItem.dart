@@ -8,6 +8,55 @@ import 'package:iit_marketing/views/newNewsConfirmation.dart';
 import 'dart:io';
 import 'package:iit_marketing/services/cloudinary_services.dart';
 import 'package:iit_marketing/services/product_services.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
+Future<bool> uploadFileAndCheckConfidence(String filePath) async {
+  // Define the endpoint URL.
+  final uri = Uri.parse('https://fastapi-krackhack-nsfw.onrender.com/predict/');
+  final request = http.MultipartRequest('POST', uri);
+
+  // Set required headers.
+  request.headers['accept'] = 'application/json';
+
+  // Create the MultipartFile from the provided file path.
+  final file = await http.MultipartFile.fromPath(
+    'file', // This field name must match what the server expects.
+    filePath,
+    contentType: MediaType('image', 'jpeg'),
+  );
+  request.files.add(file);
+
+  try {
+    // Send the request.
+    final response = await request.send();
+
+    // Process the JSON response if the upload was successful.
+    if (response.statusCode == 200) {
+      final responseString = await response.stream.bytesToString();
+      final Map<String, dynamic> jsonResponse = json.decode(responseString);
+
+      double sumConfidence = 0.0;
+      // Sum the confidence values for "Neutral" and "Drawing".
+      for (var prediction in jsonResponse['predictions']) {
+        final label = prediction['label'];
+        final confidence = prediction['confidence'];
+        if (label == "Neutral" || label == "Drawing") {
+          sumConfidence += confidence;
+        }
+      }
+      // Return true if the combined confidence is greater than 70%
+      return sumConfidence > 0.7;
+    } else {
+      print('Upload failed with status: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('An error occurred: $e');
+    return false;
+  }
+}
 
 final CloudinaryService _cloudinaryService = CloudinaryService();
 final ProductServices _productServices = ProductServices();
@@ -121,18 +170,35 @@ class _AddNewsState extends State<AddNews> {
 
     // Upload Thumbnail Image
     if (_thumbnailImage != null) {
-      String? thumbnailUrl =
-          await _cloudinaryService.uploadImage(_thumbnailImage!.path);
-      if (thumbnailUrl != null) {
-        imageUrlThumbnail.add(thumbnailUrl);
+      //\implement
+      bool result = await uploadFileAndCheckConfidence(_thumbnailImage!.path);
+      if (result) {
+        String? thumbnailUrl =
+            await _cloudinaryService.uploadImage(_thumbnailImage!.path);
+        if (thumbnailUrl != null) {
+          imageUrlThumbnail.add(thumbnailUrl);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Warning: The image appears to be inappropriate.")),
+        );
       }
     }
 
     // Upload Additional Images
     for (File image in _additionalImages) {
-      String? imageUrl = await _cloudinaryService.uploadImage(image.path);
-      if (imageUrl != null) {
-        imageUrlsAdditional.add(imageUrl);
+      bool result = await uploadFileAndCheckConfidence(image.path);
+      if (result) {
+        String? imageUrl = await _cloudinaryService.uploadImage(image.path);
+        if (imageUrl != null) {
+          imageUrlsAdditional.add(imageUrl);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Warning: The image appears to be inappropriate.")),
+        );
       }
     }
 
@@ -182,7 +248,8 @@ class _AddNewsState extends State<AddNews> {
                 _uploadImagesAndSaveToFirestore(
                     context, product, brand, mrp, categories, description);
                 print("done");
-                Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (route) => false);
+                Navigator.restorablePushNamedAndRemoveUntil(
+                    context, "/home", (route) => false);
               },
               child: const Text("OK"),
             ),
