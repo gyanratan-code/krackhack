@@ -51,32 +51,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FirebaseAuth _auth = FirebaseAuth.instance;
+    String initialRoute = _auth.currentUser != null ? "/home" : "/login";
+
     return MaterialApp(
         title: 'News App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        initialRoute: "/",
+        initialRoute: initialRoute,
         onGenerateRoute: (settings) {
           if (settings.name == "/new_news_confirmation") {
-            final args = settings.arguments
-                as Map<String, dynamic>; // Ensure dynamic to support List
+            final args = settings.arguments as Map<String, dynamic>;
             return MaterialPageRoute(
               builder: (context) => NewNewsConfirmation(
                 title: args["title"]!,
                 description: args["description"]!,
                 longDescription: args["longDescription"]!,
-                thumbnailImage: args["thumbnailPath"] ?? '', // Handle null
-                additionalImages: List<String>.from(
-                    args["additionalImages"] ?? []), // Ensure List<String>
+                thumbnailImage: args["thumbnailPath"] ?? '',
+                additionalImages: List<String>.from(args["additionalImages"] ?? []),
               ),
             );
           }
-          // ✅ Default Routes
+
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(builder: (context) => Login());
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
             case "/profile":
@@ -94,11 +93,6 @@ class MyApp extends StatelessWidget {
             case "/chat":
               return MaterialPageRoute(
                   builder: (context) => Chats(uid: _auth.currentUser!.uid));
-            // case "/itemPage":
-            //   return MaterialPageRoute(builder: (context) => ItemPage());
-            // case "/edit_profile":
-
-            //   return MaterialPageRoute(builder: (context) => EditProfilePage());
             default:
               return MaterialPageRoute(builder: (context) => HomePage());
           }

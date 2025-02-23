@@ -145,7 +145,7 @@ class _AddNewsState extends State<AddNews> {
           product,
           brand,
           mrp,
-          "123",
+          FirebaseAuth.instance.currentUser!.uid,
           categories,
           imageUrlThumbnail[0],
           imageUrlsAdditional,
@@ -182,7 +182,11 @@ class _AddNewsState extends State<AddNews> {
                 _uploadImagesAndSaveToFirestore(
                     context, product, brand, mrp, categories, description);
                 print("done");
-                Navigator.pushReplacementNamed(context, "/home");
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (mounted) {
+                    Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (route) => false);
+                  }
+                });
               },
               child: const Text("OK"),
             ),

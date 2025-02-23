@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductServices {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   // add product in product collection
   Future<String> addProduct(
       String product,
@@ -59,47 +60,62 @@ class ProductServices {
   }
 
   // Credible Products
-  Future<List<Map<String, dynamic>>> getCredibleProducts() async {
-    try {
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('users');
-      CollectionReference products =
-          FirebaseFirestore.instance.collection('products');
-      QuerySnapshot userSnapshot =
-          await users.orderBy('rating', descending: true).limit(10).get();
-
-      List<String> topUserIds = userSnapshot.docs.map((doc) => doc.id).toList();
-      if (topUserIds.isEmpty) return [];
-      // Get products from top users
-      QuerySnapshot productSnapshot =
-          await products.where('uid', whereIn: topUserIds).limit(15).get();
-      List<Map<String, dynamic>> productList = productSnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-      return productList;
-    } catch (error) {
-      print("Error fetching credible products: $error");
-      return [];
-    }
-  }
+  // Future<List<Map<String, dynamic>>> getCredibleProducts() async {
+  //   try {
+  //     CollectionReference users =
+  //         FirebaseFirestore.instance.collection('users');
+  //     CollectionReference products =
+  //         FirebaseFirestore.instance.collection('products');
+  //     QuerySnapshot userSnapshot =
+  //         await users.orderBy('rating', descending: true).limit(10).get();
+  //
+  //     List<String> topUserIds = userSnapshot.docs.map((doc) => doc.id).toList();
+  //     if (topUserIds.isEmpty) return [];
+  //     // Get products from top users
+  //     QuerySnapshot productSnapshot =
+  //         await products.where('uid', whereIn: topUserIds).limit(15).get();
+  //     List<Map<String, dynamic>> productList = productSnapshot.docs
+  //         .map((doc) => doc.data() as Map<String, dynamic>)
+  //         .toList();
+  //     return productList;
+  //   } catch (error) {
+  //     print("Error fetching credible products: $error");
+  //     return [];
+  //   }
+  // }
 
   // 10 recent Products
-  Future<List<Map<String, dynamic>>> getRecentProducts() async {
-    try {
-      CollectionReference products =
-          FirebaseFirestore.instance.collection('products');
-      QuerySnapshot querySnapshot = await products
-          // .orderBy('postedAt', descending: true) // Order by timestamp
-          .get();
-      print(querySnapshot);
-      List<Map<String, dynamic>> productList = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-      print(productList);
-      return productList;
-    } catch (error) {
-      print("Error fetching recent products: $error");
-      return [];
-    }
+  // Future<List<Map<String, dynamic>>> getRecentProducts() async {
+  //   try {
+  //     CollectionReference products =
+  //         FirebaseFirestore.instance.collection('products');
+  //     QuerySnapshot querySnapshot = await products
+  //         // .orderBy('postedAt', descending: true) // Order by timestamp
+  //         .get();
+  //     print(querySnapshot);
+  //     List<Map<String, dynamic>> productList = querySnapshot.docs
+  //         .map((doc) => doc.data() as Map<String, dynamic>)
+  //         .toList();
+  //     print(productList);
+  //     return productList;
+  //   } catch (error) {
+  //     print("Error fetching recent products: $error");
+  //     return [];
+  //   }
+  // }
+
+  Stream<List<Map<String, dynamic>>> getRecentProductsStream() {
+    return _firestore.collection('products')
+        .orderBy('postedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+  }
+
+  // Listen to real-time updates for credible products
+  Stream<List<Map<String, dynamic>>> getCredibleProductsStream() {
+    return _firestore.collection('products')
+        .where('isSold', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
   }
 }
