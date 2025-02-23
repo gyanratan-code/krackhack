@@ -136,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                             const SnackBar(content: Text("Account Created")),
                           );
                           Navigator.restorablePushNamedAndRemoveUntil(
-                              context, "/edit_profile", (route) => false);
+                              context, "/userInput", (route) => false);
                         } else {
                           print("❌ Error: $result");
                           ScaffoldMessenger.of(context).showSnackBar(

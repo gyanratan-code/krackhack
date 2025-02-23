@@ -1169,6 +1169,10 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ),
+        ElevatedButton(onPressed: () async{
+          await FirebaseAuth.instance.signOut();
+          Navigator.pushReplacementNamed(context, "/login");
+        }, child: Text("Sign Out"))
       ],
     );
   }

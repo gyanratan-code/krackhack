@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FirebaseAuth _auth = FirebaseAuth.instance;
-    String initialRoute = _auth.currentUser != null ? "/signup" : "/login";
+    String initialRoute = _auth.currentUser != null ? "/home" : "/login";
 
     return MaterialApp(
         title: 'News App',
