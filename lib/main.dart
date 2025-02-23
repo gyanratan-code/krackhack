@@ -17,6 +17,7 @@ import 'package:iit_marketing/views/orders.dart';
 import 'package:iit_marketing/views/profile.dart';
 import 'package:iit_marketing/views/search.dart';
 import 'package:iit_marketing/views/signup.dart';
+import 'package:iit_marketing/views/userInputPage.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FirebaseAuth _auth = FirebaseAuth.instance;
-    String initialRoute = _auth.currentUser != null ? "/home" : "/login";
+    String initialRoute = _auth.currentUser != null ? "/userInput" : "/login";
 
     return MaterialApp(
         title: 'News App',
@@ -78,6 +79,8 @@ class MyApp extends StatelessWidget {
             case "/":
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
+            case "/userInput":
+              return MaterialPageRoute(builder: (context) => ProfileSetupPage());
             case "/profile":
               return MaterialPageRoute(builder: (context) => ProfilePage());
             case "/new":
