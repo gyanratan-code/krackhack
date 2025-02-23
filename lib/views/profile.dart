@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:iit_marketing/views/ItemPage.dart';
 import 'package:iit_marketing/views/footer.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -10,9 +11,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // Tracks selected tab
-  bool isBuySelected = true;
 
   // Sample Data for posts
   final List<String> buyPosts =
@@ -128,34 +126,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isBuySelected = true;
-                                    });
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Text("Buy",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold)),
-                                      SizedBox(height: 8),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isBuySelected = false;
-                                    });
-                                  },
+                                  onTap: () {},
                                   child: Column(
                                     children: [
                                       Text("Sell",
                                           style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 18,
                                               fontWeight: FontWeight.bold)),
                                       SizedBox(height: 8),
                                     ],
@@ -174,12 +150,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               AnimatedContainer(
                                 duration: Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
-                                width: screenWidth / 2,
+                                width: screenWidth,
                                 height: 3,
                                 color: Colors.black,
-                                transform: Matrix4.translationValues(
-                                    isBuySelected ? 0 : screenWidth / 2, 0, 0),
-                              ),
+                              )
                             ],
                           ),
                         ],
@@ -190,14 +164,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       padding: EdgeInsets.all(8),
-                      itemCount:
-                          isBuySelected ? buyPosts.length : sellPosts.length,
+                      itemCount: 5,
+                          // isBuySelected ? buyPosts.length : sellPosts.length,
                       itemBuilder: (context, index) {
-                        String title =
-                            isBuySelected ? buyPosts[index] : sellPosts[index];
+                        String title = "Tilte Here";
+                            // isBuySelected ? buyPosts[index] : sellPosts[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, "/itemPage");
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => ItemPage(product: []),
+                            //   ),
+                            // );
                           },
                           child: Card(
                             color: Colors.white,
