@@ -12,6 +12,22 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
+Future<void> updateSoldCount() async {
+  try {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    DocumentReference userDoc =
+        FirebaseFirestore.instance.collection('users').doc(uid);
+
+    await userDoc.update({
+      'pending': FieldValue.increment(1), // Increment sold count by 1
+    });
+
+    print("Sold count updated successfully.");
+  } catch (e) {
+    print("Error updating sold count: $e");
+  }
+}
+
 Future<bool> uploadFileAndCheckConfidence(String filePath) async {
   // Define the endpoint URL.
   final uri = Uri.parse('https://fastapi-krackhack-nsfw.onrender.com/predict/');
@@ -205,6 +221,7 @@ class _AddNewsState extends State<AddNews> {
     if (imageUrlThumbnail.isNotEmpty && imageUrlsAdditional.isNotEmpty) {
       // Now you have the uploaded image URLs as strings
       print("Uploaded Image URLs:");
+      updateSoldCount();
       // Firestore upload function for collection
       _descriptionController.text;
       _productServices.addProduct(
