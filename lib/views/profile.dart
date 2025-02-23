@@ -1826,7 +1826,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           // Profile Header
                           CircleAvatar(
                             radius: 50,
-                            backgroundImage: AssetImage("assets/images/i4.png"),
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: AssetImage("assets/images/user.png"),
                           ),
                           SizedBox(height: 16),
                           Row(
