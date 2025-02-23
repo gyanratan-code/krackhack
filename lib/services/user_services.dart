@@ -25,7 +25,7 @@ class UserService {
     if (querySnapshot.docs.isNotEmpty) {
       // Update the found document.
       await querySnapshot.docs.first.reference.set({
-        'username': username,
+        'name': username,
         'bio': bio,
       }, SetOptions(merge: true));
     } else {
