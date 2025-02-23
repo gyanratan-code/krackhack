@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // add product in product collection
+
+  // Add product in product collection
   Future<String> addProduct(
       String product,
       String brand,
@@ -29,93 +30,58 @@ class ProductServices {
         'isSold': false,
         'postedAt': postedAt
       });
-      return "product added successfully";
+      return "Product added successfully";
     } catch (error) {
       return "Product can't be added";
     }
   }
 
-  // search product in product collection
-  Future<List<Map<String, dynamic>>> searchProduct(
-      String query, double minPrice, double maxPrice) async {
-    try {
-      CollectionReference products =
-          FirebaseFirestore.instance.collection('products');
-      QuerySnapshot querySnapshot = await products
+  // Search product in real-time stream
+  Stream<List<Map<String, dynamic>>> searchProductStream(
+      String query, double minPrice, double maxPrice) {
+    Query baseQuery = _firestore
+        .collection('products')
+        .where('price', isGreaterThanOrEqualTo: minPrice)
+        .where('price', isLessThanOrEqualTo: maxPrice)
+        .where('isSold', isEqualTo: false)
+        .limit(30);
+
+    if (query.isNotEmpty) {
+      // When filtering by product name, order by the 'product' field.
+      baseQuery = baseQuery
+          .orderBy('product')
           .where('product', isGreaterThanOrEqualTo: query)
           .where('product', isLessThanOrEqualTo: "$query\uf8ff")
-          .where('price', isGreaterThanOrEqualTo: minPrice)
-          .where('price', isLessThanOrEqualTo: maxPrice)
-          .where('isSold', isEqualTo: false)
-          .limit(30)
-          .get();
-      List<Map<String, dynamic>> productList = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-      return productList;
-    } catch (error) {
-      print("Error searching product: $error");
-      return [];
+          .limit(30);
+    } else {
+      // If there's no query, order by 'postedAt' to get recent products.
+      baseQuery = baseQuery.orderBy('postedAt', descending: true).limit(10);
     }
+
+    return baseQuery.snapshots().map((snapshot) => snapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList());
   }
 
-  // Credible Products
-  // Future<List<Map<String, dynamic>>> getCredibleProducts() async {
-  //   try {
-  //     CollectionReference users =
-  //         FirebaseFirestore.instance.collection('users');
-  //     CollectionReference products =
-  //         FirebaseFirestore.instance.collection('products');
-  //     QuerySnapshot userSnapshot =
-  //         await users.orderBy('rating', descending: true).limit(10).get();
-  //
-  //     List<String> topUserIds = userSnapshot.docs.map((doc) => doc.id).toList();
-  //     if (topUserIds.isEmpty) return [];
-  //     // Get products from top users
-  //     QuerySnapshot productSnapshot =
-  //         await products.where('uid', whereIn: topUserIds).limit(15).get();
-  //     List<Map<String, dynamic>> productList = productSnapshot.docs
-  //         .map((doc) => doc.data() as Map<String, dynamic>)
-  //         .toList();
-  //     return productList;
-  //   } catch (error) {
-  //     print("Error fetching credible products: $error");
-  //     return [];
-  //   }
-  // }
-
-  // 10 recent Products
-  // Future<List<Map<String, dynamic>>> getRecentProducts() async {
-  //   try {
-  //     CollectionReference products =
-  //         FirebaseFirestore.instance.collection('products');
-  //     QuerySnapshot querySnapshot = await products
-  //         // .orderBy('postedAt', descending: true) // Order by timestamp
-  //         .get();
-  //     print(querySnapshot);
-  //     List<Map<String, dynamic>> productList = querySnapshot.docs
-  //         .map((doc) => doc.data() as Map<String, dynamic>)
-  //         .toList();
-  //     print(productList);
-  //     return productList;
-  //   } catch (error) {
-  //     print("Error fetching recent products: $error");
-  //     return [];
-  //   }
-  // }
-
+  // Get recent products as a real-time stream
   Stream<List<Map<String, dynamic>>> getRecentProductsStream() {
-    return _firestore.collection('products')
+    return _firestore
+        .collection('products')
         .orderBy('postedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+        .map((snapshot) => snapshot.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList());
   }
 
   // Listen to real-time updates for credible products
   Stream<List<Map<String, dynamic>>> getCredibleProductsStream() {
-    return _firestore.collection('products')
+    return _firestore
+        .collection('products')
         .where('isSold', isEqualTo: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+        .map((snapshot) => snapshot.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList());
   }
 }
