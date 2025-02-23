@@ -25,7 +25,8 @@ class ProductServices {
         'thumbnail': thumbnail,
         'image': image,
         'description': description,
-        'isSold': false
+        'isSold': false,
+        'postedAt': postedAt
       });
       return "product added successfully";
     } catch (error) {
