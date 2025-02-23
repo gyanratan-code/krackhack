@@ -182,11 +182,7 @@ class _AddNewsState extends State<AddNews> {
                 _uploadImagesAndSaveToFirestore(
                     context, product, brand, mrp, categories, description);
                 print("done");
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  if (mounted) {
-                    Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (route) => false);
-                  }
-                });
+                Navigator.restorablePushNamedAndRemoveUntil(context, "/home", (route) => false);
               },
               child: const Text("OK"),
             ),

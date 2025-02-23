@@ -1037,8 +1037,10 @@ class _HomePageState extends State<HomePage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(title,
-              style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
+          child: Text(
+            title,
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+          ),
         ),
         SizedBox(
           height: 220,
@@ -1046,11 +1048,9 @@ class _HomePageState extends State<HomePage> {
             stream: stream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                    child: CircularProgressIndicator()); // Loading indicator
+                return Center(child: CircularProgressIndicator());
               }
-              if (snapshot.hasError ||
-                  !snapshot.hasData ||
+              if (snapshot.hasError || !snapshot.hasData ||
                   snapshot.data!.isEmpty) {
                 return Center(child: Text("No products found"));
               }
@@ -1090,28 +1090,24 @@ class _HomePageState extends State<HomePage> {
                                   Container(
                                     height: 120,
                                     width: double.infinity,
-                                    color: Colors
-                                        .grey[300], // Placeholder background
+                                    color: Colors.grey[300],
                                     child: Center(
-                                        child:
-                                            CircularProgressIndicator()), // Show loading spinner
+                                        child: CircularProgressIndicator()),
                                   ),
                                   Image.network(
                                     product['thumbnail'] ?? '',
                                     height: 120,
                                     width: double.infinity,
                                     fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
+                                    loadingBuilder: (context, child,
+                                        loadingProgress) {
                                       if (loadingProgress == null) return child;
                                       return Container(
                                         height: 120,
                                         width: double.infinity,
-                                        color: Colors.grey[
-                                            300], // Placeholder background
+                                        color: Colors.grey[300],
                                         child: Center(
-                                            child:
-                                                CircularProgressIndicator()), // Show loading spinner
+                                            child: CircularProgressIndicator()),
                                       );
                                     },
                                     errorBuilder: (context, error, stackTrace) {
@@ -1135,8 +1131,8 @@ class _HomePageState extends State<HomePage> {
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
                                 product['brand'] ?? '',
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 14),
                               ),
                             ),
                             Padding(
@@ -1145,14 +1141,18 @@ class _HomePageState extends State<HomePage> {
                                 product['product'] ?? '',
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
+                                maxLines: 2, // Limit to 2 lines
+                                overflow: TextOverflow
+                                    .ellipsis, // Add ellipsis (...)
                               ),
                             ),
                             const Spacer(),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, bottom: 8.0),
+                              padding: const EdgeInsets.only(
+                                  left: 8.0, bottom: 8.0),
                               child: Text(
-                                "₹${product['price']?.toStringAsFixed(2) ?? ''}",
+                                "₹${product['price']?.toStringAsFixed(2) ??
+                                    ''}",
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
