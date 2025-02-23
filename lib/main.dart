@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iit_marketing/views/ItemPage.dart';
 import 'package:iit_marketing/views/addItem.dart';
 import 'package:iit_marketing/views/chat_page.dart';
+import 'package:iit_marketing/views/chat_screen.dart';
 import 'package:iit_marketing/views/home.dart';
 import 'package:iit_marketing/views/login.dart';
 import 'package:iit_marketing/views/newNewsConfirmation.dart';
@@ -16,6 +17,7 @@ import 'package:iit_marketing/views/profile.dart';
 import 'package:iit_marketing/views/search.dart';
 import 'package:iit_marketing/views/signup.dart';
 import 'firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 var CLOUDINARY_URL =
     'cloudinary://965385289918515:7VlJRstsqWldtRjsm6KAvFM_A70@dec8nkbl4';
@@ -25,10 +27,21 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  setupFCM();
   print("✅ Firebase initialized successfully!");
   // await dotenv.load(fileName: ".env");
 
   runApp(const MyApp());
+}
+
+void setupFCM() {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print("New message received: ${message.notification?.body}");
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print("User clicked on notification");
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -45,21 +58,23 @@ class MyApp extends StatelessWidget {
         initialRoute: "/",
         onGenerateRoute: (settings) {
           if (settings.name == "/new_news_confirmation") {
-            final args = settings.arguments as Map<String, dynamic>; // Ensure dynamic to support List
+            final args = settings.arguments
+                as Map<String, dynamic>; // Ensure dynamic to support List
             return MaterialPageRoute(
               builder: (context) => NewNewsConfirmation(
                 title: args["title"]!,
                 description: args["description"]!,
                 longDescription: args["longDescription"]!,
                 thumbnailImage: args["thumbnailPath"] ?? '', // Handle null
-                additionalImages: List<String>.from(args["additionalImages"] ?? []), // Ensure List<String>
+                additionalImages: List<String>.from(
+                    args["additionalImages"] ?? []), // Ensure List<String>
               ),
             );
           }
           // ✅ Default Routes
           switch (settings.name) {
             case "/":
-              return MaterialPageRoute(builder: (context) => HomePage());
+              return MaterialPageRoute(builder: (context) => SignUp());
             case "/home":
               return MaterialPageRoute(builder: (context) => HomePage());
             case "/profile":
@@ -75,7 +90,10 @@ class MyApp extends StatelessWidget {
             case "/search":
               return MaterialPageRoute(builder: (context) => SearchPage());
             case "/chat":
-              return MaterialPageRoute(builder: (context) => ChatPage());
+              return MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                        receiverId: "12345",
+                      ));
             case "/itemPage":
               return MaterialPageRoute(builder: (context) => ItemPage());
             // case "/edit_profile":
