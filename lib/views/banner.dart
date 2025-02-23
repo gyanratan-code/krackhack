@@ -10,12 +10,11 @@ class _BannerCarouselState extends State<BannerCarousel> {
   final PageController _bannerController = PageController();
 
   final List<String> banners = [
-    'assets/images/i1.png',
-    'assets/images/i2.png',
-    'assets/images/i3.png',
-    'assets/images/i4.png',
-    'assets/images/i5.png',
-    'assets/images/i6.png',
+    'assets/images/bn1.png',
+    'assets/images/bn2.png',
+    'assets/images/bn3.png',
+    'assets/images/bn4.png',
+    'assets/images/bn5.png',
   ];
 
   @override
