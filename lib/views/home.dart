@@ -958,71 +958,74 @@ class _HomePageState extends State<HomePage> {
         onRefresh: () async {
           setState(() {}); // Reload the home page when pulled down
         },
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 44),
+        child: Container(
+          color: Colors.white,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 44),
 
-              // History & Orders Buttons
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {},
-                        icon: Icon(Icons.history,
-                            size: 18, color: Colors.blueAccent),
-                        label: Text('History',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.blueAccent)),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          side: BorderSide(color: Colors.grey.shade300),
+                // History & Orders Buttons
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.history,
+                              size: 18, color: Colors.blueAccent),
+                          label: Text('History',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.blueAccent)),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.pushNamed(context, "/orders");
-                        },
-                        icon: Icon(Icons.shopping_cart,
-                            size: 18, color: Colors.green),
-                        label: Text('Orders',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.green)),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          side: BorderSide(color: Colors.grey.shade300),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(context, "/orders");
+                          },
+                          icon: Icon(Icons.shopping_cart,
+                              size: 18, color: Colors.green),
+                          label: Text('Orders',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.green)),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              BannerCarousel(),
+                BannerCarousel(),
 
-              // Popular Items (Fetched from Firestore - Recent Products)
-              buildProductSection(
-                  "Popular Items", productServices.getRecentProductsStream()),
+                // Popular Items (Fetched from Firestore - Recent Products)
+                buildProductSection(
+                    "Popular Items", productServices.getRecentProductsStream()),
 
-              // Best Deals (Fetched from Firestore - Credible Products)
-              buildProductSection(
-                  "Best Deals", productServices.getCredibleProductsStream()),
-            ],
+                // Best Deals (Fetched from Firestore - Credible Products)
+                buildProductSection(
+                    "Best Deals", productServices.getCredibleProductsStream()),
+              ],
+            ),
           ),
         ),
       ),

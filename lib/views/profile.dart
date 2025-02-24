@@ -83,15 +83,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         return Column(
                           children: [
                             // Stats Row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                profileStat(pending, "Items Pending"),
-                                profileStat(bought, "Items Bought"),
-                                profileStat(sold, "Items Sold"),
-                              ],
-                            ),
-                            SizedBox(height: 18),
                             // Bio Section
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,6 +95,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 SizedBox(height: 4),
                                 Text(bio),
+                              ],
+                            ),
+                            SizedBox(height: 18),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                profileStat(pending, "Items Pending"),
+                                profileStat(bought, "Items Bought"),
+                                profileStat(sold, "Items Sold"),
                               ],
                             ),
                           ],
