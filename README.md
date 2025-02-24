@@ -41,7 +41,7 @@ To maintain a safe environment, we have implemented a rigorous NSFW content dete
 - Flutter (Cross-platform: Android/iOS)
 
 ### 🔗 Backend & Database
-- Firebase (Authentication, Data Management)
+- Firebase (Authentication, Data Management, Chat)
 - FastAPI (NSFW Content Detection API)
 - Render (API Deployment)
 
