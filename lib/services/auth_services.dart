@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
+
   Future<String> createAccountWithEmail(String email, String password) async {
     try {
       UserCredential userCredential =
@@ -11,6 +12,7 @@ class AuthService {
         email: email,
         password: password,
       );
+
       await users.doc(userCredential.user!.uid).set({
         "uid": userCredential.user!.uid,
         "profilePic": "assets/images/user.png",
@@ -19,15 +21,14 @@ class AuthService {
         "sold": 0,
         "pending": 0
       });
-      try {
-        await saveFCMToken(userCredential.user!.uid);
-      } catch (error) {
-        return "Error in FCM token";
-      }
-      print("User Created: ${userCredential.user?.email}");
+
+      // Save FCM Token after signup
+      await saveFCMToken(userCredential.user!.uid);
+
+      print("✅ User Created: ${userCredential.user?.email}");
       return "Account created";
     } on FirebaseAuthException catch (e) {
-      print("Firebase Auth Error: ${e.code} - ${e.message}");
+      print("❌ Firebase Auth Error: ${e.code} - ${e.message}");
       return e.message.toString();
     }
   }
@@ -35,10 +36,15 @@ class AuthService {
   Future<String> loginWithEmailAndPassword(
       String email, String password) async {
     try {
-      await FirebaseAuth.instance
+      UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+
+      // Save FCM Token after login
+      await saveFCMToken(userCredential.user!.uid);
+
       return "Login successful";
     } on FirebaseAuthException catch (e) {
+      print("❌ Firebase Auth Error: ${e.code} - ${e.message}");
       return e.message.toString();
     }
   }
@@ -57,13 +63,32 @@ class AuthService {
     return user != null;
   }
 
-  // save FCM Token
+  // Save FCM Token to Firestore
   Future<void> saveFCMToken(String userId) async {
-    String? token = await FirebaseMessaging.instance.getToken();
-    if (token != null) {
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+
+      if (token == null) {
+        print("⚠️ FCM Token is null, skipping update.");
+        return;
+      }
+
+      await users.doc(userId).update({
         'fcmToken': token,
       });
+      print("✅ FCM Token saved for user: $userId");
+
+      // Start listening for token updates
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+        await users.doc(userId).update({
+          'fcmToken': newToken,
+        });
+        print("🔄 Updated FCM Token: $newToken");
+      }).onError((error) {
+        print("❌ Error in token refresh: $error");
+      });
+    } catch (e) {
+      print("❌ Error saving FCM Token: $e");
     }
   }
 
@@ -72,7 +97,7 @@ class AuthService {
     required String receiverUid,
   }) async {
     try {
-      DocumentReference currentUserRef = users.doc(currentUid.toString());
+      DocumentReference currentUserRef = users.doc(currentUid);
       DocumentReference receiverUserRef = users.doc(receiverUid);
 
       // Add the receiver's UID to the current user's chat list.
@@ -85,8 +110,7 @@ class AuthService {
         'chat': FieldValue.arrayUnion([currentUid])
       });
     } catch (e) {
-      print("Error updating chat list: $e");
-      // Optionally, handle the error with additional UI feedback.
+      print("❌ Error updating chat list: $e");
     }
   }
 
@@ -108,8 +132,7 @@ class AuthService {
         'chat': FieldValue.arrayRemove([currentUid])
       });
     } catch (e) {
-      print("Error removing chat list entry: $e");
-      // Optionally, handle the error with additional UI feedback.
+      print("❌ Error removing chat list entry: $e");
     }
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iit_marketing/views/ItemPage.dart';
 import 'package:iit_marketing/views/addItem.dart';
 import 'package:iit_marketing/views/allUsersChats.dart';
@@ -17,27 +16,69 @@ import 'package:iit_marketing/views/signup.dart';
 import 'package:iit_marketing/views/userInputPage.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:iit_marketing/services/auth_services.dart'; // Import AuthService for FCM token
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  setupFCM();
+
+  // Get the currently logged-in user
+  User? user = FirebaseAuth.instance.currentUser;
+
+  // Initialize FCM only if the user is logged in
+  if (user != null) {
+    await setupFCM(user.uid);
+  }
+
   print("✅ Firebase initialized successfully!");
-  // await dotenv.load(fileName: ".env");
 
   runApp(const MyApp());
 }
 
-void setupFCM() {
+Future<void> setupFCM(String userId) async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Request notification permissions (iOS & Android)
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.denied) {
+    print("🔴 Notifications permission denied.");
+    return;
+  }
+
+  print("✅ Notifications permission granted: ${settings.authorizationStatus}");
+
+  // Save FCM token
+  await AuthService().saveFCMToken(userId);
+
+  // Foreground message listener
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("New message received: ${message.notification?.body}");
+    print("📩 Foreground message received: ${message.notification?.title}");
   });
 
+  // When the user taps on a notification
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print("User clicked on notification");
+    print("📬 User tapped on a notification: ${message.notification?.title}");
   });
+
+  // Handle background messages
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+}
+
+// Background message handler (must be a top-level function)
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("📨 Background message received: ${message.notification?.title}");
 }
 
 class MyApp extends StatelessWidget {

@@ -235,7 +235,6 @@ class _AddNewsState extends State<AddNews> {
           description,
           Timestamp.now(),
           false);
-      // \implement
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to upload images. Try again!")),
